@@ -1,0 +1,20 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+const articles = (await getCollection('news', ({ data }) => !data.draft)).sort((a,b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
+---
+<BaseLayout title="Tafuta | Isaya Muunganisha Wachumba" description="Tafuta habari, trends, social media, burudani na maisha katika Isaya Muunganisha Wachumba.">
+  <section class="container search-page">
+    <p class="eyebrow">SEARCH</p><h1>Tafuta</h1>
+    <label for="search-input">Tafuta habari</label><input id="search-input" type="search" placeholder="Andika unachotafuta..." autocomplete="off" />
+    <p id="count" class="muted"></p>
+    <div id="results">{articles.map((article) => <article data-search={`${article.data.title} ${article.data.excerpt} ${article.data.category} ${article.data.tags.join(' ')}`}><a href={`/news/${article.id}`}><img src={article.data.featuredImage} alt={article.data.featuredImageAlt} width="300" height="169" loading="lazy" /><div><small>{article.data.category}</small><h2>{article.data.title}</h2><p>{article.data.excerpt}</p></div></a></article>)}</div>
+  </section>
+  <script is:inline>
+    const input=document.querySelector('#search-input');const cards=[...document.querySelectorAll('#results article')];const count=document.querySelector('#count');
+    function filter(){const q=(input.value||'').trim().toLowerCase();let n=0;cards.forEach(c=>{const ok=!q||c.dataset.search.toLowerCase().includes(q);c.hidden=!ok;if(ok)n++});count.textContent=q?`${n} result${n===1?'':'s'}`:''}
+    input?.addEventListener('input',filter);filter();
+  </script>
+  <style>.search-page{padding:55px 0;max-width:900px}.eyebrow{font-size:.75rem;font-weight:900;color:#b91c1c;letter-spacing:.1em}.search-page h1{font-size:clamp(2.5rem,6vw,4.5rem);margin:4px 0 24px}.search-page label{display:block;font-weight:800;margin-bottom:8px}.search-page input{width:100%;border:1px solid #cbd5e1;border-radius:12px;padding:15px 16px;font:inherit;outline:none}.search-page input:focus{border-color:#0f172a}.muted{color:#64748b}.search-page #results{margin-top:30px}.search-page article{border-top:1px solid #e2e8f0;padding:18px 0}.search-page article a{display:grid;grid-template-columns:220px 1fr;gap:20px}.search-page img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px}.search-page small{color:#b91c1c;font-weight:900;text-transform:uppercase;font-size:.7rem}.search-page h2{font-size:1.25rem;margin:6px 0}.search-page article p{color:#64748b;line-height:1.5;margin:0}@media(max-width:600px){.search-page article a{grid-template-columns:1fr}}
+  </style>
+</BaseLayout>
