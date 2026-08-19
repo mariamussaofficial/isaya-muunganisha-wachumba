@@ -15,7 +15,7 @@ const {
   type = 'website',
 } = Astro.props;
 
-const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? '';
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://isayamuunganishawachumba.xyz';
 const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
 const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
 ---
@@ -24,10 +24,12 @@ const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="theme-color" content="#0f172a" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Isaya Muunganisha Wachumba" />
+    <meta property="og:locale" content="sw_TZ" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
@@ -39,42 +41,46 @@ const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
     <title>{title}</title>
     <slot name="head" />
     <style is:global>
-      :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #111827; background: #fff; }
+      :root { font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #0f172a; background: #fff; }
       * { box-sizing: border-box; }
-      body { margin: 0; }
+      html { scroll-behavior: smooth; }
+      body { margin: 0; background: #fff; }
       a { color: inherit; text-decoration: none; }
+      img { max-width: 100%; height: auto; }
       .container { width: min(1180px, calc(100% - 32px)); margin-inline: auto; }
-      .muted { color: #6b7280; }
+      .muted { color: #64748b; }
       .skip-link { position: absolute; left: -9999px; }
-      .skip-link:focus { left: 16px; top: 16px; z-index: 100; padding: 10px 14px; background: #fff; border: 1px solid #111827; }
+      .skip-link:focus { left: 16px; top: 16px; z-index: 100; padding: 10px 14px; background: #fff; border: 1px solid #0f172a; }
+      .topbar { background:#0f172a;color:#fff;font-size:.82rem; }
+      .topbar-inner { display:flex;justify-content:space-between;gap:16px;padding:8px 0; }
+      .brand-row { display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 0; }
+      .brand { font-weight:900;letter-spacing:-.04em;font-size:1.5rem; }
+      .brand span { display:block;font-size:.65rem;letter-spacing:.12em;font-weight:700;color:#64748b;margin-top:2px; }
+      .search-link { border:1px solid #e2e8f0;border-radius:999px;padding:9px 15px;font-size:.9rem; }
+      .nav-wrap { border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0; }
+      .nav { display:flex;gap:22px;overflow-x:auto;white-space:nowrap;padding:12px 0;font-weight:700;font-size:.9rem; }
+      .nav a:hover { text-decoration:underline;text-underline-offset:4px; }
+      @media (max-width:700px) { .topbar-inner { justify-content:center; }.brand-row { padding:14px 0; }.search-link { display:none; }.nav { gap:18px; } }
     </style>
   </head>
   <body>
     <a class="skip-link" href="#main">Ruka kwenye maudhui</a>
+    <div class="topbar"><div class="container topbar-inner"><span>Habari • Trends • Maisha • Social Media</span><span>Tanzania</span></div></div>
     <header>
-      <div class="container" style="display:flex;align-items:center;justify-content:space-between;padding:18px 0;border-bottom:1px solid #e5e7eb;">
-        <a href="/" style="font-weight:800;font-size:1.2rem;">ISAYA</a>
-        <nav aria-label="Main navigation" style="display:flex;gap:18px;font-size:.92rem;">
-          <a href="/news">Habari</a>
-          <a href="/trends">Trends</a>
-          <a href="/life">Maisha</a>
-          <a href="/entertainment">Burudani</a>
-          <a href="/social-media">Social Media</a>
-        </nav>
+      <div class="container brand-row">
+        <a class="brand" href="/" aria-label="Isaya Muunganisha Wachumba">ISAYA<span>MUUNGANISHA WACHUMBA</span></a>
+        <a class="search-link" href="/search">🔎 Tafuta</a>
       </div>
+      <div class="nav-wrap"><nav class="container nav" aria-label="Main navigation">
+        <a href="/">Mwanzo</a><a href="/news">Habari</a><a href="/trends">Trends</a><a href="/life">Maisha</a><a href="/entertainment">Burudani</a><a href="/social-media">Social Media</a>
+      </nav></div>
     </header>
     <main id="main"><slot /></main>
-    <footer style="margin-top:64px;border-top:1px solid #e5e7eb;">
-      <div class="container" style="padding:32px 0;display:grid;gap:16px;">
-        <strong>Isaya Muunganisha Wachumba</strong>
-        <div class="muted" style="display:flex;gap:16px;flex-wrap:wrap;">
-          <a href="/about">Kuhusu Sisi</a>
-          <a href="/contact">Mawasiliano</a>
-          <a href="/editorial-policy">Editorial Policy</a>
-          <a href="/privacy">Privacy</a>
-          <a href="/terms">Terms</a>
-        </div>
-        <small class="muted">© {new Date().getFullYear()} Isaya Muunganisha Wachumba. Haki zote zimehifadhiwa.</small>
+    <footer style="margin-top:72px;background:#0f172a;color:#fff;">
+      <div class="container" style="padding:42px 0;display:grid;gap:22px;">
+        <div><strong style="font-size:1.2rem;">Isaya Muunganisha Wachumba</strong><p style="color:#cbd5e1;max-width:620px;line-height:1.7;margin:8px 0 0;">Online media ya habari, trends, social media, burudani na mambo yanayohusu maisha.</p></div>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;color:#cbd5e1;font-size:.9rem;"><a href="/about">Kuhusu Sisi</a><a href="/contact">Mawasiliano</a><a href="/editorial-policy">Editorial Policy</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div>
+        <small style="color:#94a3b8;">© {new Date().getFullYear()} Isaya Muunganisha Wachumba. Haki zote zimehifadhiwa.</small>
       </div>
     </footer>
   </body>
