@@ -1,0 +1,19 @@
+{
+  "name": "Isaya Muunganisha Wachumba",
+  "short_name": "Isaya",
+  "description": "Online media ya habari, trends, social media, burudani na mambo yanayohusu maisha.",
+  "lang": "sw-TZ",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
