@@ -1,0 +1,19 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { articles } from '../../data/articles';
+
+export function getStaticPaths() {
+  const authors = [...new Set(articles.map((article) => article.authorSlug))];
+  return authors.map((slug) => ({ params: { slug }, props: { articles: articles.filter((article) => article.authorSlug === slug), name: articles.find((article) => article.authorSlug === slug)?.author ?? slug } }));
+}
+
+const { name, articles: authorArticles } = Astro.props;
+---
+<BaseLayout title={`${name} | Isaya Muunganisha Wachumba`} description={`Makala zilizoandikwa na ${name} katika Isaya Muunganisha Wachumba.`}>
+  <section class="container author-page">
+    <p class="eyebrow">MWANDISHI</p><h1>{name}</h1><p class="bio">Mwandishi katika Isaya Muunganisha Wachumba, akifuatilia habari, trends, social media na maisha.</p>
+    <h2>Makala</h2>
+    <div class="list">{authorArticles.map((article) => <a href={`/news/${article.slug}`}><img src={article.featuredImage} alt={article.featuredImageAlt} width="320" height="180" loading="lazy" /><div><small>{article.category}</small><h3>{article.title}</h3><time datetime={article.publishedAt}>{new Date(article.publishedAt).toLocaleDateString('sw-TZ')}</time></div></a>)}</div>
+  </section>
+  <style>.author-page{padding:55px 0}.eyebrow{font-size:.75rem;font-weight:800;color:#b91c1c;letter-spacing:.1em}.author-page h1{font-size:clamp(2.2rem,5vw,4rem);margin:.3rem 0}.bio{max-width:650px;color:#64748b;line-height:1.7;margin-bottom:45px}.list{display:grid;gap:18px;max-width:850px}.list>a{display:grid;grid-template-columns:220px 1fr;gap:20px;border-top:1px solid #e2e8f0;padding-top:18px}.list img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px}.list small{color:#b91c1c;font-weight:800}.list h3{margin:7px 0;font-size:1.2rem}.list time{font-size:.8rem;color:#64748b}@media(max-width:600px){.list>a{grid-template-columns:1fr}}</style>
+</BaseLayout>
