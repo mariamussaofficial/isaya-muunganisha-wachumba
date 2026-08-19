@@ -4,7 +4,7 @@ import { getCollection } from 'astro:content';
 
 const articles = (await getCollection('news', ({ data }) => !data.draft)).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf());
 ---
-<BaseLayout title="Habari | Isaya Muunganisha Wachumba" description="Habari mpya kutoka Tanzania na zaidi — taarifa, matukio na habari zinazogusa maisha.">
+<BaseLayout title="Latest Tanzania News & Headlines | Isaya Muunganisha Wachumba" description="Read the latest Tanzania news, breaking stories, current affairs and community updates from Isaya Muunganisha Wachumba.">
   <section class="container page-head"><p class="eyebrow">NEWSROOM</p><h1>Habari mpya</h1><p>Taarifa muhimu, matukio na habari zinazogusa jamii.</p></section>
   <section class="container stories" aria-label="Makala zote">
     {articles.map((article) => <article class="story"><a href={`/news/${article.id}/`}><img src={article.data.featuredImage} alt={article.data.featuredImageAlt} width="480" height="270" loading="lazy" /><div><small>{article.data.category}</small><h2>{article.data.title}</h2><p>{article.data.excerpt}</p><time datetime={article.data.publishedAt.toISOString()}>{article.data.publishedAt.toLocaleDateString('sw-TZ', { day:'numeric', month:'long', year:'numeric' })}</time></div></a></article>)}
