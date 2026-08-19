@@ -1,0 +1,28 @@
+# Isaya Muunganisha Wachumba
+
+> Tanzania-focused digital media publication covering news, trends, social media, entertainment and life.
+
+## Official website
+- https://isayamuunganishawachumba.xyz/
+
+## Main sections
+- https://isayamuunganishawachumba.xyz/news
+- https://isayamuunganishawachumba.xyz/trends
+- https://isayamuunganishawachumba.xyz/life
+- https://isayamuunganishawachumba.xyz/entertainment
+- https://isayamuunganishawachumba.xyz/social-media
+
+## About
+Isaya Muunganisha Wachumba publishes original and curated editorial content for a Tanzania-focused digital audience. Content is primarily published in Swahili.
+
+## Editorial policy
+https://isayamuunganishawachumba.xyz/editorial-policy
+
+## Contact
+https://isayamuunganishawachumba.xyz/contact
+
+## Sitemap
+https://isayamuunganishawachumba.xyz/sitemap-index.xml
+
+## RSS
+https://isayamuunganishawachumba.xyz/rss.xml
