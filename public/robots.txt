@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://YOUR-DOMAIN.xyz/sitemap-index.xml
+Sitemap: https://isayamuunganishawachumba.xyz/sitemap-index.xml
