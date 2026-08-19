@@ -1,35 +1,35 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { articles, getArticle, getRelatedArticles } from '../../data/articles';
+import { getCollection, render } from 'astro:content';
 
-export function getStaticPaths() {
-  return articles.map((article) => ({ params: { slug: article.slug }, props: { article } }));
+export async function getStaticPaths() {
+  const entries = await getCollection('news', ({ data }) => !data.draft);
+  return entries.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 }
 
-const { article } = Astro.props;
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const data = entry.data;
 const siteUrl = Astro.site?.toString().replace(/\/$/, '') ?? 'https://isayamuunganishawachumba.xyz';
-const articleUrl = `${siteUrl}/news/${article.slug}`;
-const published = new Date(article.publishedAt);
-const updated = article.updatedAt ? new Date(article.updatedAt) : published;
-const related = getRelatedArticles(article.slug, article.categorySlug);
+const articleUrl = `${siteUrl}/news/${entry.id}`;
+const published = new Date(data.publishedAt);
+const updated = data.updatedAt ? new Date(data.updatedAt) : published;
+const allArticles = await getCollection('news', ({ data: item }) => !item.draft);
+const related = allArticles.filter((item) => item.id !== entry.id && item.data.categorySlug === data.categorySlug).sort((a, b) => b.data.publishedAt.valueOf() - a.data.publishedAt.valueOf()).slice(0, 3);
 
 const schema = {
   '@context': 'https://schema.org',
   '@type': 'NewsArticle',
   mainEntityOfPage: { '@type': 'WebPage', '@id': articleUrl },
-  headline: article.title,
-  description: article.excerpt,
-  image: [`${siteUrl}${article.featuredImage}`],
-  datePublished: article.publishedAt,
-  dateModified: article.updatedAt ?? article.publishedAt,
-  author: { '@type': 'Person', name: article.author, url: `${siteUrl}/authors/${article.authorSlug}` },
-  publisher: {
-    '@type': 'Organization',
-    name: 'Isaya Muunganisha Wachumba',
-    url: siteUrl,
-    logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.png` },
-  },
-  articleSection: article.category,
+  headline: data.title,
+  description: data.excerpt,
+  image: [`${siteUrl}${data.featuredImage}`],
+  datePublished: data.publishedAt.toISOString(),
+  dateModified: (data.updatedAt ?? data.publishedAt).toISOString(),
+  author: { '@type': 'Person', name: data.author, url: `${siteUrl}/authors/${data.authorSlug}` },
+  publisher: { '@type': 'Organization', name: 'Isaya Muunganisha Wachumba', url: siteUrl, logo: { '@type': 'ImageObject', url: `${siteUrl}/logo.png` } },
+  articleSection: data.category,
+  keywords: data.tags.join(', '),
   inLanguage: 'sw-TZ',
 };
 
@@ -38,82 +38,33 @@ const breadcrumbs = {
   '@type': 'BreadcrumbList',
   itemListElement: [
     { '@type': 'ListItem', position: 1, name: 'Mwanzo', item: siteUrl },
-    { '@type': 'ListItem', position: 2, name: article.category, item: `${siteUrl}/${article.categorySlug}` },
-    { '@type': 'ListItem', position: 3, name: article.title, item: articleUrl },
+    { '@type': 'ListItem', position: 2, name: data.category, item: `${siteUrl}/${data.categorySlug}` },
+    { '@type': 'ListItem', position: 3, name: data.title, item: articleUrl },
   ],
 };
 ---
-<BaseLayout title={`${article.title} | Isaya Muunganisha Wachumba`} description={article.excerpt} canonical={articleUrl} image={article.featuredImage} type="article">
+<BaseLayout title={`${data.title} | Isaya Muunganisha Wachumba`} description={data.excerpt} canonical={articleUrl} image={data.featuredImage} type="article">
   <script type="application/ld+json" set:html={JSON.stringify(schema)} slot="head" />
   <script type="application/ld+json" set:html={JSON.stringify(breadcrumbs)} slot="head" />
   <article class="article-page container">
-    <nav class="breadcrumbs" aria-label="Breadcrumb">
-      <a href="/">Mwanzo</a><span>›</span><a href={`/${article.categorySlug}`}>{article.category}</a><span>›</span><span aria-current="page">Soma</span>
-    </nav>
-
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Mwanzo</a><span>›</span><a href={`/${data.categorySlug}`}>{data.category}</a><span>›</span><span aria-current="page">Soma</span></nav>
     <header class="article-header">
-      <a class="category" href={`/${article.categorySlug}`}>{article.category}</a>
-      <h1>{article.title}</h1>
-      <p class="dek">{article.excerpt}</p>
-      <div class="byline">
-        <div class="author-avatar" aria-hidden="true">I</div>
-        <div><strong><a href={`/authors/${article.authorSlug}`}>{article.author}</a></strong><div class="meta"><time datetime={article.publishedAt}>{published.toLocaleDateString('sw-TZ', { day: 'numeric', month: 'long', year: 'numeric' })}</time> · {published.toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' })} EAT{article.updatedAt ? ` · Imeboreshwa ${updated.toLocaleDateString('sw-TZ')}` : ''}</div></div>
-      </div>
+      <a class="category" href={`/${data.categorySlug}`}>{data.category}</a>
+      <h1>{data.title}</h1>
+      <p class="dek">{data.excerpt}</p>
+      <div class="byline"><div class="author-avatar" aria-hidden="true">I</div><div><strong><a href={`/authors/${data.authorSlug}`}>{data.author}</a></strong><div class="meta"><time datetime={data.publishedAt.toISOString()}>{published.toLocaleDateString('sw-TZ', { day: 'numeric', month: 'long', year: 'numeric' })}</time> · {published.toLocaleTimeString('sw-TZ', { hour: '2-digit', minute: '2-digit' })} EAT{data.updatedAt ? ` · Imeboreshwa ${updated.toLocaleDateString('sw-TZ')}` : ''}</div></div></div>
     </header>
-
     <div class="article-grid">
-      <aside class="share" aria-label="Shiriki makala">
-        <span>SHIRIKI</span>
-        <a href={`https://wa.me/?text=${encodeURIComponent(`${article.title} ${articleUrl}`)}`} target="_blank" rel="noopener noreferrer" aria-label="Shiriki WhatsApp">WA</a>
-        <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Shiriki Facebook">f</a>
-        <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(article.title)}`} target="_blank" rel="noopener noreferrer" aria-label="Shiriki X">X</a>
-        <button type="button" id="copy-link" aria-label="Copy link">↗</button>
-      </aside>
-
+      <aside class="share" aria-label="Shiriki makala"><span>SHIRIKI</span><a href={`https://wa.me/?text=${encodeURIComponent(`${data.title} ${articleUrl}`)}`} target="_blank" rel="noopener noreferrer" aria-label="Shiriki WhatsApp">WA</a><a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(articleUrl)}`} target="_blank" rel="noopener noreferrer" aria-label="Shiriki Facebook">f</a><a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(articleUrl)}&text=${encodeURIComponent(data.title)}`} target="_blank" rel="noopener noreferrer" aria-label="Shiriki X">X</a><button type="button" id="copy-link" aria-label="Copy link">↗</button></aside>
       <div class="article-body-wrap">
-        <figure class="featured"><img src={article.featuredImage} alt={article.featuredImageAlt} width="1200" height="675" loading="eager" decoding="async" /><figcaption>{article.featuredImageAlt}</figcaption></figure>
-        <div class="article-body">
-          {article.content.map((paragraph) => <p>{paragraph}</p>)}
-        </div>
-
-        {related.length > 0 && <section class="related" aria-labelledby="related-title">
-          <div class="section-head"><h2 id="related-title">Habari zinazohusiana</h2><span></span></div>
-          <div class="related-grid">
-            {related.map((item) => <a class="related-card" href={`/news/${item.slug}`}><img src={item.featuredImage} alt={item.featuredImageAlt} width="400" height="225" loading="lazy" /><div><small>{item.category}</small><h3>{item.title}</h3><time datetime={item.publishedAt}>{new Date(item.publishedAt).toLocaleDateString('sw-TZ')}</time></div></a>)}
-          </div>
-        </section>}
+        <figure class="featured"><img src={data.featuredImage} alt={data.featuredImageAlt} width="1200" height="675" loading="eager" decoding="async" /><figcaption>{data.featuredImageAlt}</figcaption></figure>
+        <div class="article-body"><Content /></div>
+        {related.length > 0 && <section class="related" aria-labelledby="related-title"><div class="section-head"><h2 id="related-title">Habari zinazohusiana</h2><span></span></div><div class="related-grid">{related.map((item) => <a class="related-card" href={`/news/${item.id}`}><img src={item.data.featuredImage} alt={item.data.featuredImageAlt} width="400" height="225" loading="lazy" /><div><small>{item.data.category}</small><h3>{item.data.title}</h3><time datetime={item.data.publishedAt.toISOString()}>{new Date(item.data.publishedAt).toLocaleDateString('sw-TZ')}</time></div></a>)}</div></section>}
       </div>
     </div>
   </article>
-
-  <script is:inline>
-    document.querySelector('#copy-link')?.addEventListener('click', async () => {
-      await navigator.clipboard.writeText(window.location.href);
-      const button = document.querySelector('#copy-link');
-      if (button) { button.textContent = '✓'; setTimeout(() => button.textContent = '↗', 1400); }
-    });
-  </script>
-
+  <script is:inline>document.querySelector('#copy-link')?.addEventListener('click', async () => { await navigator.clipboard.writeText(window.location.href); const button = document.querySelector('#copy-link'); if (button) { button.textContent = '✓'; setTimeout(() => button.textContent = '↗', 1400); } });</script>
   <style>
-    .article-page { padding:34px 0 0; }
-    .breadcrumbs { display:flex; gap:9px; align-items:center; color:#64748b; font-size:.84rem; margin-bottom:34px; }
-    .breadcrumbs a:hover { color:#0f172a; text-decoration:underline; }
-    .article-header { max-width:900px; margin:0 auto 34px; }
-    .category { color:#b91c1c; font-size:.82rem; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
-    h1 { font-size:clamp(2.15rem, 5vw, 4.4rem); line-height:1.02; letter-spacing:-.045em; margin:12px 0 18px; }
-    .dek { font-size:clamp(1.05rem, 2vw, 1.3rem); color:#475569; line-height:1.65; margin:0 0 22px; }
-    .byline { display:flex; gap:12px; align-items:center; font-size:.9rem; }
-    .author-avatar { width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#0f172a;color:#fff;font-weight:800; }
-    .meta { color:#64748b; margin-top:3px; }
-    .article-grid { display:grid; grid-template-columns:64px minmax(0, 820px); gap:28px; justify-content:center; }
-    .share { display:flex; flex-direction:column; gap:9px; align-items:center; padding-top:10px; position:sticky; top:20px; height:max-content; }
-    .share span { font-size:.62rem; font-weight:800; color:#94a3b8; writing-mode:vertical-rl; margin-bottom:4px; }
-    .share a,.share button { width:40px;height:40px;border:1px solid #e2e8f0;border-radius:50%;display:grid;place-items:center;background:#fff;font-weight:800;cursor:pointer; }
-    .share a:hover,.share button:hover { border-color:#0f172a; }
-    .featured { margin:0 0 32px; }.featured img { width:100%;border-radius:18px;display:block;object-fit:cover; }.featured figcaption { color:#64748b;font-size:.76rem;margin-top:7px; }
-    .article-body { font-size:1.12rem; line-height:1.9; }.article-body p { margin:0 0 1.35em; }
-    .related { margin-top:55px;padding-top:28px;border-top:1px solid #e2e8f0; }.section-head { display:flex;align-items:center;gap:14px; }.section-head h2 { font-size:1.35rem; }.section-head span { height:1px;background:#e2e8f0;flex:1; }
-    .related-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:18px; }.related-card { border:1px solid #e2e8f0;border-radius:14px;overflow:hidden; }.related-card img { display:block;width:100%;aspect-ratio:16/9;object-fit:cover; }.related-card div { padding:13px; }.related-card small { color:#b91c1c;font-weight:800;text-transform:uppercase;font-size:.7rem; }.related-card h3 { font-size:1rem;line-height:1.3;margin:6px 0; }.related-card time { color:#64748b;font-size:.75rem; }
-    @media (max-width:700px) { .article-page { padding-top:24px; }.article-grid { grid-template-columns:1fr; }.share { position:static; flex-direction:row; justify-content:flex-start; }.share span { writing-mode:initial; }.related-grid { grid-template-columns:1fr; } }
+    .article-page{padding:34px 0 0}.breadcrumbs{display:flex;gap:9px;align-items:center;color:#64748b;font-size:.84rem;margin-bottom:34px}.breadcrumbs a:hover{color:#0f172a;text-decoration:underline}.article-header{max-width:900px;margin:0 auto 34px}.category{color:#b91c1c;font-size:.82rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em}h1{font-size:clamp(2.15rem,5vw,4.4rem);line-height:1.02;letter-spacing:-.045em;margin:12px 0 18px}.dek{font-size:clamp(1.05rem,2vw,1.3rem);color:#475569;line-height:1.65;margin:0 0 22px}.byline{display:flex;gap:12px;align-items:center;font-size:.9rem}.author-avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:#0f172a;color:#fff;font-weight:800}.meta{color:#64748b;margin-top:3px}.article-grid{display:grid;grid-template-columns:64px minmax(0,820px);gap:28px;justify-content:center}.share{display:flex;flex-direction:column;gap:9px;align-items:center;padding-top:10px;position:sticky;top:20px;height:max-content}.share span{font-size:.62rem;font-weight:800;color:#94a3b8;writing-mode:vertical-rl;margin-bottom:4px}.share a,.share button{width:40px;height:40px;border:1px solid #e2e8f0;border-radius:50%;display:grid;place-items:center;background:#fff;font-weight:800;cursor:pointer}.share a:hover,.share button:hover{border-color:#0f172a}.featured{margin:0 0 32px}.featured img{width:100%;border-radius:18px;display:block;object-fit:cover}.featured figcaption{color:#64748b;font-size:.76rem;margin-top:7px}.article-body{font-size:1.12rem;line-height:1.9}.article-body p{margin:0 0 1.35em}.related{margin-top:55px;padding-top:28px;border-top:1px solid #e2e8f0}.section-head{display:flex;align-items:center;gap:14px}.section-head h2{font-size:1.35rem}.section-head span{height:1px;background:#e2e8f0;flex:1}.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.related-card{border:1px solid #e2e8f0;border-radius:14px;overflow:hidden}.related-card img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover}.related-card div{padding:13px}.related-card small{color:#b91c1c;font-weight:800;text-transform:uppercase;font-size:.7rem}.related-card h3{font-size:1rem;line-height:1.3;margin:6px 0}.related-card time{color:#64748b;font-size:.75rem}@media(max-width:700px){.article-page{padding-top:24px}.article-grid{grid-template-columns:1fr}.share{position:static;flex-direction:row;justify-content:flex-start}.share span{writing-mode:initial}.related-grid{grid-template-columns:1fr}}
   </style>
 </BaseLayout>
