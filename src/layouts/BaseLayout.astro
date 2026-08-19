@@ -11,7 +11,7 @@ const {
   title = 'Isaya Muunganisha Wachumba | Habari, Trends na Maisha',
   description = 'Isaya Muunganisha Wachumba ni online media ya habari, trends, social media, burudani na mambo yanayohusu maisha.',
   canonical,
-  image = '/og-default.svg',
+  image = '/logo.png',
   type = 'website',
 } = Astro.props;
 
@@ -20,13 +20,18 @@ const canonicalUrl = canonical ?? `${siteUrl}${Astro.url.pathname}`;
 const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
 ---
 <!doctype html>
-<html lang="sw">
+<html lang="sw-TZ">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <meta name="theme-color" content="#0f172a" />
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href="/logo.png" type="image/png" />
+    <link rel="shortcut icon" href="/logo.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/logo.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="alternate" type="application/rss+xml" title="Isaya Muunganisha Wachumba RSS" href="/rss.xml" />
     <meta property="og:type" content={type} />
     <meta property="og:site_name" content="Isaya Muunganisha Wachumba" />
     <meta property="og:locale" content="sw_TZ" />
@@ -34,10 +39,12 @@ const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:alt" content="Isaya Muunganisha Wachumba" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content="Isaya Muunganisha Wachumba" />
     <title>{title}</title>
     <slot name="head" />
     <style is:global>
@@ -54,13 +61,14 @@ const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
       .topbar { background:#0f172a;color:#fff;font-size:.82rem; }
       .topbar-inner { display:flex;justify-content:space-between;gap:16px;padding:8px 0; }
       .brand-row { display:flex;align-items:center;justify-content:space-between;gap:24px;padding:18px 0; }
-      .brand { font-weight:900;letter-spacing:-.04em;font-size:1.5rem; }
+      .brand { display:inline-flex;align-items:center;gap:12px;font-weight:900;letter-spacing:-.04em;font-size:1.5rem; }
+      .brand-logo { width:58px;height:58px;object-fit:contain;border-radius:10px; }
       .brand span { display:block;font-size:.65rem;letter-spacing:.12em;font-weight:700;color:#64748b;margin-top:2px; }
       .search-link { border:1px solid #e2e8f0;border-radius:999px;padding:9px 15px;font-size:.9rem; }
       .nav-wrap { border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0; }
       .nav { display:flex;gap:22px;overflow-x:auto;white-space:nowrap;padding:12px 0;font-weight:700;font-size:.9rem; }
       .nav a:hover { text-decoration:underline;text-underline-offset:4px; }
-      @media (max-width:700px) { .topbar-inner { justify-content:center; }.brand-row { padding:14px 0; }.search-link { display:none; }.nav { gap:18px; } }
+      @media (max-width:700px) { .topbar-inner { justify-content:center; }.brand-row { padding:14px 0; }.brand-logo { width:48px;height:48px; }.search-link { display:none; }.nav { gap:18px; } }
     </style>
   </head>
   <body>
@@ -68,7 +76,10 @@ const imageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
     <div class="topbar"><div class="container topbar-inner"><span>Habari • Trends • Maisha • Social Media</span><span>Tanzania</span></div></div>
     <header>
       <div class="container brand-row">
-        <a class="brand" href="/" aria-label="Isaya Muunganisha Wachumba">ISAYA<span>MUUNGANISHA WACHUMBA</span></a>
+        <a class="brand" href="/" aria-label="Isaya Muunganisha Wachumba">
+          <img class="brand-logo" src="/logo.png" alt="Isaya Muunganisha Wachumba logo" width="58" height="58" decoding="async" />
+          <span>MUUNGANISHA WACHUMBA</span>
+        </a>
         <a class="search-link" href="/search">🔎 Tafuta</a>
       </div>
       <div class="nav-wrap"><nav class="container nav" aria-label="Main navigation">
