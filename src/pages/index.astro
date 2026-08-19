@@ -6,7 +6,7 @@ const articles = (await getCollection('news', ({ data }) => !data.draft)).sort((
 const [hero, ...latest] = articles;
 const sections = [['Habari','/news'],['Trends','/trends'],['Maisha','/life'],['Burudani','/entertainment'],['Social Media','/social-media']];
 ---
-<BaseLayout title="Isaya Muunganisha Wachumba | Habari, Trends, Maisha na Social Media" description="Isaya Muunganisha Wachumba ni online media ya Tanzania inayochapisha habari, trends, social media, burudani na mambo yanayohusu maisha.">
+<BaseLayout title="Tanzania News, Trends & Life Stories | Isaya Muunganisha Wachumba" description="Latest Tanzania news, trending stories, social media, entertainment and life content from Isaya Muunganisha Wachumba.">
   <section class="container intro"><div><p class="eyebrow">ONLINE MEDIA • TANZANIA</p><h1>Habari.<br />Trends.<br />Maisha.</h1></div><p class="mission">Stories zinazotokea, conversations zinazotrend na mambo yanayogusa maisha yetu.</p></section>
   {hero && <section class="container hero-grid"><a class="hero" href={`/news/${hero.id}`}><img src={hero.data.featuredImage} alt={hero.data.featuredImageAlt} width="1200" height="675" loading="eager" decoding="async" /><div class="hero-overlay"><span>{hero.data.category}</span><h2>{hero.data.title}</h2><p>{hero.data.excerpt}</p></div></a><div class="side-stories">{latest.slice(0,2).map((story) => <a href={`/news/${story.id}`}><small>{story.data.category}</small><h3>{story.data.title}</h3><time datetime={story.data.publishedAt.toISOString()}>{new Date(story.data.publishedAt).toLocaleDateString('sw-TZ')}</time></a>)}</div></section>}
   <section class="ticker"><div class="container ticker-inner">{sections.map(([label, href]) => <a href={href}>{label}</a>)}</div></section>
